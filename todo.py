@@ -1,4 +1,4 @@
-    #!/usr/bin/python
+#!/usr/bin/python
 # A Command Line Based TODO Manager
 
 import sys
