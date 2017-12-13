@@ -48,7 +48,7 @@ def todo_mark():
     Function to change status of a task to marked state.
     """
     display_tasks = [x_task for x_task in todos if x_task['STATUS']=='TODO']
-    if len(todos) == 0 or len(display_tasks) == 0:
+    if len(display_tasks) == 0:
         print "No tasks to mark"
         exit()
 
