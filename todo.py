@@ -22,7 +22,7 @@ class bcolors:
     WARNING = '\033[93m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
-    
+
 def todo_add():
     what = str(raw_input("What? : "))
     description = str(raw_input("Description: "))
@@ -39,52 +39,50 @@ def todo_add():
     todos.append(task)
     with open(source_file, 'w') as fp:
         json.dump(todos, fp)
-    
+
 def todo_del():
     print "Delete from the list"
 
-def todo_mark():
+def todo_status(prev_state = None, new_state = None):
     """
     Function to change status of a task to marked state.
+    :param prev_state: State before changing state of a task
+    :param new_state: Updated state of a task
     """
-    display_tasks = [x_task for x_task in todos if x_task['STATUS']=='TODO']
+
+    display_tasks = [x_task for x_task in todos if x_task['STATUS'] == prev_state]
     if len(display_tasks) == 0:
-        print "No tasks to mark"
+        print "No tasks to mark/unmark"
         exit()
 
     counter, value = [], []
-    for c, v in enumerate(display_tasks,1):
-        print c, v
-        counter.append(c)
-        value.append(v)
+    print display_tasks
+    todo_list(custom_list=display_tasks)
 
     try:
-        mark_opt = int(raw_input("Select option to be marked \n ->"))
-        if mark_opt not in range(1,len(display_tasks)+1):
+        mark_opt = int(raw_input("Select task number \n ->"))
+        if mark_opt not in range(len(display_tasks)):
             print "Invalid option"
             exit()
     except ValueError as error:
         print "Please entire valid number"
         exit()
 
-    mark_task = [task['NAME'] for cnt, task in zip(counter, value) if cnt == mark_opt]
+    mark_task = [task['NAME'] for cnt, task in enumerate(display_tasks) if cnt == mark_opt]
     for x_task in todos:
        if mark_task[0] == x_task['NAME']:
-           x_task['STATUS'] = "DONE"
+           x_task['STATUS'] = new_state
            with open(source_file, 'w') as fp:
                json.dump(todos, fp)
-           print "Task %s successfully marked"%(str(mark_task[0]))
+           print "Task %s successfully updated"%(str(mark_task[0]))
            break
 
 
 
-def todo_unmark():
-    print "Mark as done as not done -> so TODO"
+def todo_print(todo, i):
 
-
-def todo_print(todo):
     if todo['STATUS'] == "TODO":
-        sys.stdout.write(" " + bcolors.FAIL + " ( TODO ) " + todo['PRIORITY'] +
+        sys.stdout.write(str(i)+ " " + bcolors.FAIL + " ( TODO ) " + todo['PRIORITY'] +
                          " " + bcolors.ENDC + todo['NAME'])
         if len(todo['DESC'].lstrip().rstrip()) > 0:
             sys.stdout.write(" (" + todo['DESC'].lstrip().rstrip() + ")")
@@ -92,18 +90,20 @@ def todo_print(todo):
             sys.stdout.write(bcolors.OKBLUE + " :" + todo['DEADLINE'].lstrip().rstrip() + ":"
                              + bcolors.ENDC)
     elif todo['STATUS'] == "DONE":
-        sys.stdout.write(" " + bcolors.OKGREEN + "( DONE ) " +
+        sys.stdout.write(str(i) + " " + bcolors.OKGREEN + "( DONE ) " +
                          bcolors.ENDC + todo['NAME'])
         if len(todo['DESC'].lstrip().rstrip()) > 0:
             sys.stdout.write(
                 " (" + todo['DESC'].lstrip().rstrip() + ")")
     print ""
-            
-def todo_list():
+
+def todo_list(custom_list=None):
     if len(todos) == 0:
         print "NO TASKS"
-    for i in range(len(todos)):
-        todo_print(todos[i])
+    if not custom_list:
+        custom_list = todos
+    for i in range(len(custom_list)):
+        todo_print(custom_list[i], i)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -115,9 +115,9 @@ if __name__ == '__main__':
     if args.action == 'del':
         todo_del()
     if args.action == 'mark':
-        todo_mark()
+        todo_status(prev_state = 'TODO', new_state = 'DONE')
     if args.action == 'unmark':
-        todo_unmark()
+        todo_status(prev_state = 'DONE', new_state = 'TODO')
     if args.action == 'list':
         todo_list()
     if args.action == 'help':
