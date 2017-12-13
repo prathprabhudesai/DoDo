@@ -1,4 +1,4 @@
-#!/usr/bin/python
+    #!/usr/bin/python
 # A Command Line Based TODO Manager
 
 import sys
@@ -44,7 +44,28 @@ def todo_del():
     print "Delete from the list"
 
 def todo_mark():
-    print "Mark as done"
+    """
+    Function to change status of a task to marked state.
+    """
+    if len(todos) == 0:
+        print "NO TASKS"
+
+    display_tasks = [str(x_task['NAME']) for x_task in todos]
+    mark_task = str(raw_input("Select task to be marked " + str(display_tasks) +"\n ->"))
+    if mark_task not in display_tasks:
+        print "Task %s is not available" %(str(mark_task))
+    for x_task in todos:
+       if mark_task == x_task['NAME']:
+           if x_task['STATUS'] == "TODO":
+               x_task['STATUS'] = "DONE"
+               with open(source_file, 'w') as fp:
+                  json.dump(todos, fp)
+               print "Task %s successfully marked"%(str(mark_task))
+               break
+           else:
+               print "Task %s is already in marked state"%(str(mark_task))
+               break
+
 
 def todo_unmark():
     print "Mark as done as not done -> so TODO"
