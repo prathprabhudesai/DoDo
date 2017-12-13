@@ -47,24 +47,35 @@ def todo_mark():
     """
     Function to change status of a task to marked state.
     """
-    if len(todos) == 0:
-        print "NO TASKS"
+    display_tasks = [x_task for x_task in todos if x_task['STATUS']=='TODO']
+    if len(todos) == 0 or len(display_tasks) == 0:
+        print "No tasks to mark"
+        exit()
 
-    display_tasks = [str(x_task['NAME']) for x_task in todos]
-    mark_task = str(raw_input("Select task to be marked " + str(display_tasks) +"\n ->"))
-    if mark_task not in display_tasks:
-        print "Task %s is not available" %(str(mark_task))
+    counter, value = [], []
+    for c, v in enumerate(display_tasks,1):
+        print c, v
+        counter.append(c)
+        value.append(v)
+
+    try:
+        mark_opt = int(raw_input("Select option to be marked \n ->"))
+        if mark_opt not in range(1,len(display_tasks)+1):
+            print "Invalid option"
+            exit()
+    except ValueError as error:
+        print "Please entire valid number"
+        exit()
+
+    mark_task = [task['NAME'] for cnt, task in zip(counter, value) if cnt == mark_opt]
     for x_task in todos:
-       if mark_task == x_task['NAME']:
-           if x_task['STATUS'] == "TODO":
-               x_task['STATUS'] = "DONE"
-               with open(source_file, 'w') as fp:
-                  json.dump(todos, fp)
-               print "Task %s successfully marked"%(str(mark_task))
-               break
-           else:
-               print "Task %s is already in marked state"%(str(mark_task))
-               break
+       if mark_task[0] == x_task['NAME']:
+           x_task['STATUS'] = "DONE"
+           with open(source_file, 'w') as fp:
+               json.dump(todos, fp)
+           print "Task %s successfully marked"%(str(mark_task[0]))
+           break
+
 
 
 def todo_unmark():
