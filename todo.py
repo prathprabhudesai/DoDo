@@ -141,3 +141,4 @@ if __name__ == '__main__':
         todo_usage()
     if args.action == 'source':
         sys.stdout.write("\n Source: /tmp/.todo.json\n")
+
