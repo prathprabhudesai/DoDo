@@ -8,7 +8,7 @@ A simple CLI based todo app
 ## Usage
 DoDo currently supports basic functionality such as adding tasks, clearing, marking them as done or undone, assigning priority etc.
 
-<b>todo add</b>
+####$ todo add
 ````
 What? : Appointment
 Description: Dental Checkup at Dr. Harris's Clinic
@@ -16,3 +16,15 @@ When? : Tomorrow 9 pm
 Priority ([A]/B/C): A
 Task Added!
 ````
+####$ todo list
+````
+1 ( TODO ) [#A] Appointment (Dental Checkup at Dr. Harris's Clinic) :Tomorrow 9 pm:
+````
+####$ todo mark
+````
+1 ( TODO ) [#A] Appointment (Dental Checkup at Dr. Harris's Clinic) :Tomorrow 9 pm:
+
+Which one? : 1
+Successfully updated the task :-)
+````
+
