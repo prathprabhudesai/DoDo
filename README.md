@@ -9,10 +9,10 @@ A simple CLI based todo app
 DoDo currently supports basic functionality such as adding tasks, clearing, marking them as done or undone, assigning priority etc.
 
 <b>todo add</b>
-<code>
+````
 What? : Appointment
 Description: Dental Checkup at Dr. Harris's Clinic
 When? : Tomorrow 9 pm
 Priority ([A]/B/C): A
 Task Added!
-</code>
+````
