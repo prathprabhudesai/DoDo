@@ -25,7 +25,7 @@ class bcolors:
 
 def save_tasks(todos_list = None):
     '''
-    :param todos_list:
+    :param todos_list: the list of all the tasks
     :return:
     '''
     tasks = []
@@ -40,7 +40,7 @@ def save_tasks(todos_list = None):
     
 def todo_add():
     '''
-    :return:
+    :return: void
     '''
     sys.stdout.write("\n")
     what = str(raw_input("What? : "))
@@ -61,7 +61,7 @@ def todo_add():
 
 def todo_del():
     '''
-    :return:
+    :return: void
     '''
     todo_list()
     try:
@@ -82,7 +82,7 @@ def todo_del():
 
 def todo_update():
     '''
-    :return:
+    :return: void
     '''
     todo_list()
     try:
@@ -124,10 +124,10 @@ def todo_update():
         
 def todo_status(action, prev_state = None, new_state = None):
     '''
-    :param action:
-    :param prev_state:
-    :param new_state:
-    :return:
+    :param action: it is the input action mark or unmark
+    :param prev_state: the previosu state of the task
+    :param new_state: new state of the task
+    :return: void
     '''
     display_tasks = [x_task for x_task in todos if x_task['STATUS'] == prev_state]
     if len(display_tasks) == 0:
@@ -153,9 +153,9 @@ def todo_status(action, prev_state = None, new_state = None):
 
 def todo_print(todo, i):
     '''
-    :param todo:
-    :param i:
-    :return:
+    :param todo: task
+    :param i: index
+    :return: void
     '''
     sys.stdout.write("\n")
     if todo['STATUS'] == "TODO":
@@ -176,8 +176,8 @@ def todo_print(todo, i):
 
 def todo_list(custom_list=None):
     '''
-    :param custom_list:
-    :return:
+    :param custom_list: custom / filtered list of tasks
+    :return: void
     '''
     if len(todos) == 0:
          sys.stdout.write("\n" + bcolors.WARNING + "You have NO tasks!\n\n" + bcolors.ENDC)
