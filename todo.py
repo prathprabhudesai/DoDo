@@ -23,7 +23,25 @@ class bcolors:
     FAIL = '\033[91m'
     ENDC = '\033[0m'
 
+def save_tasks(todos_list = None):
+    '''
+    :param todos_list:
+    :return:
+    '''
+    tasks = []
+    pending_tasks = [p_task for p_task in todos_list if p_task['STATUS'] == 'TODO']
+    done_tasks = [d_task for d_task in todos_list if d_task['STATUS'] == 'DONE']
+    pending_tasks = sorted(pending_tasks, key=lambda k: k['PRIORITY'])
+    done_tasks = sorted(done_tasks, key=lambda k: k['PRIORITY'])
+    tasks.extend(pending_tasks)
+    tasks.extend(done_tasks)
+    with open(source_file, 'w') as fp:
+        json.dump(tasks, fp)
+    
 def todo_add():
+    '''
+    :return:
+    '''
     sys.stdout.write("\n")
     what = str(raw_input("What? : "))
     description = str(raw_input("Description: "))
@@ -41,19 +59,10 @@ def todo_add():
     save_tasks(todos)
     sys.stdout.write("" + bcolors.WARNING + "Task Added! \n" + bcolors.ENDC)
 
-def save_tasks(todos_list = None):
-    tasks = []
-    pending_tasks = [p_task for p_task in todos_list if p_task['STATUS'] == 'TODO']
-    done_tasks = [d_task for d_task in todos_list if d_task['STATUS'] == 'DONE']
-    pending_tasks = sorted(pending_tasks, key=lambda k: k['PRIORITY'])
-    done_tasks = sorted(done_tasks, key=lambda k: k['PRIORITY'])
-    tasks.extend(pending_tasks)
-    tasks.extend(done_tasks)
-    with open(source_file, 'w') as fp:
-        json.dump(tasks, fp)
-
-
 def todo_del():
+    '''
+    :return:
+    '''
     todo_list()
     try:
         del_opt = int(raw_input("Which one? : "))
@@ -71,7 +80,55 @@ def todo_del():
     save_tasks(todos)
     sys.stdout.write("" + bcolors.WARNING + "Succcessfully deleted the task :-)\n" + bcolors.ENDC)
 
+def todo_update():
+    '''
+    :return:
+    '''
+    todo_list()
+    try:
+        update_opt = int(raw_input("Which one? : "))
+        update_opt = update_opt - 1
+        if update_opt not in range(len(todos)):
+            sys.stdout.write("" + bcolors.FAIL + "This task number is not there :-(\n")
+            exit()
+    except ValueError as error:
+        exit()
+    update_task = [task['NAME'] for cnt, task in enumerate(todos) if cnt == update_opt]
+    for task in todos:
+        if task['NAME'] == update_task[0]:
+            sys.stdout.write("\n" + bcolors.WARNING + "1. Name\n2. Deadline\n3. Description\n4. Status\n" + bcolors.ENDC)
+            option = int(raw_input("What do you want to change? : "))
+            if option not in [1,2,3,4]:
+                sys.stdout.write("" + bcolors.FAIL + "There's no option like that!" + bcolors.ENDC)
+                exit()
+            if option == 1:
+                new_name = raw_input("New Name? : ")
+                task['NAME'] = new_name
+            elif option == 2:
+                new_deadline = raw_input("New Deadline? : ")
+                task['DEADLINE'] = new_deadline
+            elif option == 3:
+                new_desc = raw_input("New Description? : ")
+                task['DESC'] = new_desc
+            elif option == 4:
+                new_status = raw_input("New Status? mark/unmark : ")
+                if new_status.upper() == "MARK": 
+                    task['STATUS'] = "DONE"
+                elif new_status.upper() == "UNMARK":
+                    task['STATUS'] = "TODO"
+            else:
+                exit()
+            save_tasks(todos)
+            sys.stdout.write("" + bcolors.WARNING + "Successfully updated the task :-)\n" + bcolors.ENDC)
+            break
+        
 def todo_status(action, prev_state = None, new_state = None):
+    '''
+    :param action:
+    :param prev_state:
+    :param new_state:
+    :return:
+    '''
     display_tasks = [x_task for x_task in todos if x_task['STATUS'] == prev_state]
     if len(display_tasks) == 0:
         sys.stdout.write("" + bcolors.FAIL + "NO TASKS to " + bcolors.FAIL + action + "\n" + bcolors.ENDC)
@@ -95,6 +152,11 @@ def todo_status(action, prev_state = None, new_state = None):
            break
 
 def todo_print(todo, i):
+    '''
+    :param todo:
+    :param i:
+    :return:
+    '''
     sys.stdout.write("\n")
     if todo['STATUS'] == "TODO":
         sys.stdout.write(str(i+1)+ " " + bcolors.FAIL + "( TODO ) " + todo['PRIORITY'] +
@@ -113,6 +175,10 @@ def todo_print(todo, i):
     sys.stdout.write("\n")
 
 def todo_list(custom_list=None):
+    '''
+    :param custom_list:
+    :return:
+    '''
     if len(todos) == 0:
          sys.stdout.write("\n" + bcolors.WARNING + "You have NO tasks!\n\n" + bcolors.ENDC)
          exit()
@@ -125,7 +191,7 @@ def todo_list(custom_list=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("action", type=str,
-                        help="Available options: add, del, mark, unmark, list, help" )
+                        help="Available options: add, del, mark, unmark, list, update, help" )
     args = parser.parse_args()
     if args.action == 'add':
         todo_add()
@@ -139,6 +205,7 @@ if __name__ == '__main__':
         todo_list()
     if args.action == 'help':
         todo_usage()
+    if args.action == 'update':
+        todo_update()
     if args.action == 'source':
         sys.stdout.write("\n Source: /tmp/.todo.json\n")
-
