@@ -6,7 +6,6 @@ import os
 from subprocess import call
 import json
 import argparse
-from pprint import pprint
 
 # source file
 source_file = "/tmp/.todo.json"
