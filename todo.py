@@ -6,6 +6,10 @@ import os
 from subprocess import call
 import json
 import argparse
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+
 
 # source file
 source_file = "/tmp/.todo.json"
@@ -187,6 +191,42 @@ def todo_list(custom_list=None):
         todo_print(custom_list[i], i)
     sys.stdout.write("\n")
 
+def todo_notify(status='ALL'):
+    '''
+    :param status: Tasks to be notified over email based on status
+    :return: void
+    '''
+    fromaddr = "mrunmayeejog.i@gmail.com"
+    toaddr = "mrunmayeejog.i@gmail.com"
+    msg = MIMEMultipart()
+    msg['From'] = fromaddr
+    msg['To'] = toaddr
+    msg['Subject'] = "DoDo Tasks"
+
+    tasks = todos
+    body = []
+    if status == 'ALL':
+        body.append(todos)
+      
+    if status == 'TODO':
+        for i in range(len(tasks)):
+            if todos[i]['STATUS'] == "TODO":
+                body.append(todos[i])
+    if status == 'DONE':
+        for i in range(len(tasks)):
+            if todos[i]['STATUS'] == "DONE":
+                body.append(todos[i])
+
+    msg.attach(MIMEText("Hello !!\n\n" + str(body) + "\n\nHave a great day !!", 'plain'))
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(fromaddr, "mrunmayee11")
+    text = msg.as_string()
+    server.sendmail(fromaddr, toaddr, text)
+    server.quit()
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("action", type=str,
@@ -208,3 +248,5 @@ if __name__ == '__main__':
         todo_update()
     if args.action == 'source':
         sys.stdout.write("\n Source: /tmp/.todo.json\n")
+    if args.action == 'notify':
+        todo_notify(status = 'ALL')
