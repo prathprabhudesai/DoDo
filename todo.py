@@ -9,7 +9,7 @@ import argparse
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
-
+import datetime
 
 # source file
 source_file = "/tmp/.todo.json"
@@ -41,6 +41,13 @@ def save_tasks(todos_list = None):
     with open(source_file, 'w') as fp:
         json.dump(tasks, fp)
     
+def validate_date(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%Y/%m/%d')
+        return true
+    except ValueError:
+        return false
+ 
 def todo_add():
     '''
     :return: void
@@ -48,15 +55,23 @@ def todo_add():
     sys.stdout.write("\n")
     what = str(raw_input("What? : "))
     description = str(raw_input("Description: "))
-    deadline = str(raw_input("When? : "))
+    deadline = str(raw_input("When? (Today/Tomorrow/Date(YYYY/MM/DD)):	 "))
+    if str(deadline) not in ['today', 'Today', 'TODAY', 'tomorrow', 'Tomorrow', 'TOMORROW']:
+        if "/" not in str(deadline):
+            deadline = str(raw_input("Enter proper format (Today/Tomorrow/Date(YYYY/MM/DD)):   "))
+        
     priority = str(raw_input("Priority ([A]/B/C): "))
     if priority == "":
         priority = "A"
+    if str(deadline).lower() == 'today':
+        deadline = datetime.date.today( )
+    if str(deadline).lower() == 'tomorrow':
+        deadline = datetime.date.today( ) + datetime.timedelta(days=1)
     task = {}
     task['NAME'] = what
     task['STATUS'] = "TODO"
     task['DESC'] = description
-    task['DEADLINE'] = deadline
+    task['DEADLINE'] = str(deadline)
     task['PRIORITY'] = "[#" + priority.upper() + "]"
     todos.append(task)
     save_tasks(todos)
